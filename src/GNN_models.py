@@ -200,7 +200,7 @@ class APPNP_Net(torch.nn.Module):
         x = F.dropout(x, p=self.dropout, training=self.training)
         x = self.lin2(x)
         x = self.prop1(x, edge_index)
-        return F.log_softmax(x, dim=1)
+        return x.view(-1)
 
 
 class GCN_JKNet(torch.nn.Module):

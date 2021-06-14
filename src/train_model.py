@@ -107,21 +107,15 @@ if __name__ == '__main__':
     parser.add_argument('--alpha', type=float, default=0.1)
     parser.add_argument('--dprate', type=float, default=0.5)
     parser.add_argument('--C', type=int)
-    parser.add_argument('--Init', type=str,
-                        choices=['SGC', 'PPR', 'NPPR', 'Random', 'WS', 'Null'],
-                        default='PPR')
+    parser.add_argument('--Init', type=str, choices=['SGC', 'PPR', 'NPPR', 'Random', 'WS', 'Null'], default='PPR')
     parser.add_argument('--Gamma', default=None)
-    parser.add_argument('--ppnp', default='GPR_prop',
-                        choices=['PPNP', 'GPR_prop'])
-    parser.add_argument('--heads', default=8, type=int)
-    parser.add_argument('--output_heads', default=1, type=int)
+    parser.add_argument('--ppnp', default='GPR_prop', choices=['PPNP', 'GPR_prop'])
 
     parser.add_argument('--dataset', default='county_facebook_2016')
     parser.add_argument('--target', default='election')
     parser.add_argument('--cuda', type=int, default=0)
     parser.add_argument('--RPMAX', type=int, default=10)
-    parser.add_argument('--net', type=str, choices=['GCN', 'GAT', 'APPNP', 'ChebNet', 'JKNet', 'GPRGNN'],
-                        default='GPRGNN')
+    parser.add_argument('--net', type=str, choices=['GCN', 'GAT', 'APPNP', 'ChebNet', 'JKNet', 'GPRGNN'], default='GPRGNN')
 
     args = parser.parse_args()
 
