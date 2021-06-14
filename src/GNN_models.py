@@ -4,7 +4,6 @@
 
 import torch
 import random
-import ipdb
 import math
 import torch.nn.functional as F
 import os.path as osp
@@ -108,11 +107,11 @@ class GPRGNN(torch.nn.Module):
 
         if self.dprate == 0.0:
             x = self.prop1(x, edge_index)
-            return F.log_softmax(x, dim=1)
+            return x.view(-1)
         else:
             x = F.dropout(x, p=self.dprate, training=self.training)
             x = self.prop1(x, edge_index)
-            return F.log_softmax(x, dim=1)
+            return x.view(-1)
 
 
 class GCN_Net(torch.nn.Module):

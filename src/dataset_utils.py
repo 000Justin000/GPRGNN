@@ -3,12 +3,12 @@
 # vim:fenc=utf-8
 
 import torch
-import ipdb
-import math
-import ipdb
 
 import os.path as osp
+import pandas as pd
 import numpy as np
+from collections import namedtuple
+
 import torch.nn.functional as F
 import torch_geometric.transforms as T
 
@@ -165,45 +165,14 @@ class WebKB(InMemoryDataset):
         return '{}()'.format(self.name)
 
 
-def DataLoader(name):
-    # assert name in ['cSBM_data_Aug_19_2020-13:06',
-    #                 'cSBM_data_Aug_18_2020-18:50',
-    #                 'cSBM_data_Aug_21_2020-10:06',
-    #                 'cSBM_data_Aug_19_2020-20:41',
-    #                 'cSBM_data_Aug_21_2020-11:04',
-    #                 'cSBM_data_Aug_21_2020-11:21',
-    #                 'cSBM_data_Sep_01_2020-14:15',
-    #                 'cSBM_data_Sep_01_2020-14:18',
-    #                 'cSBM_data_Sep_01_2020-14:19',
-    #                 'cSBM_data_Sep_01_2020-14:32',
-    #                 'cSBM_data_Sep_01_2020-14:22',
-    #                 'cSBM_data_Sep_01_2020-14:23',
-    #                 'cSBM_data_Sep_01_2020-14:27',
-    #                 'cSBM_data_Sep_01_2020-14:29',
-    #                 'Cora', 'Citeseer', 'PubMed',
-    #                 'Computers', 'Photo',
-    #                 'chameleon', 'film', 'squirrel',
-    #                 'Texas', 'Cornell']
-
-    # if name in ['cSBM_data_Aug_19_2020-13:06',
-    #             'cSBM_data_Aug_18_2020-18:50',
-    #             'cSBM_data_Aug_21_2020-10:06',
-    #             'cSBM_data_Aug_19_2020-20:41',
-    #             'cSBM_data_Aug_21_2020-11:04',
-    #             'cSBM_data_Aug_21_2020-11:21',
-    #             'cSBM_data_Sep_01_2020-14:15',
-    #             'cSBM_data_Sep_01_2020-14:18',
-    #             'cSBM_data_Sep_01_2020-14:19',
-    #             'cSBM_data_Sep_01_2020-14:32',
-    #             'cSBM_data_Sep_01_2020-14:22',
-    #             'cSBM_data_Sep_01_2020-14:23',
-    #             'cSBM_data_Sep_01_2020-14:27',
-    #             'cSBM_data_Sep_01_2020-14:29']:
+def DataLoader(name, tname):
     if 'cSBM_data' in name:
         path = '../data/'
         dataset = dataset_ContextualSBM(path, name=name)
     else:
         name = name.lower()
+
+    DataSet = namedtuple('DataSet', ['data', 'num_nodes', 'num_features', 'num_classes'])
 
     if name in ['cora', 'citeseer', 'pubmed']:
         root_path = '../'
@@ -214,11 +183,16 @@ def DataLoader(name):
         path = osp.join(root_path, 'data', name)
         dataset = Amazon(path, name, T.NormalizeFeatures())
     elif name in ['chameleon', 'film', 'squirrel']:
-        dataset = dataset_heterophily(
-            root='../data/', name=name, transform=T.NormalizeFeatures())
+        dataset = dataset_heterophily(root='../data/', name=name, transform=T.NormalizeFeatures())
     elif name in ['texas', 'cornell']:
-        dataset = WebKB(root='../data/',
-                        name=name, transform=T.NormalizeFeatures())
+        dataset = WebKB(root='../data/', name=name, transform=T.NormalizeFeatures())
+    elif name in ["county_facebook_2016", "climate_2008", "ward_2016", "twitch_PTBR_true"]:
+        edges = pd.read_csv('../data/{}/edges'.format(name))
+        attributes = pd.read_csv('../data/{}/attributes'.format(name))
+        features = np.array(attributes.drop([tname], axis=1))
+        target = np.array(attributes[tname])
+        data = Data(x=torch.tensor(features, dtype=torch.float32), y=torch.tensor(target, dtype=torch.float32), edge_index=to_undirected(torch.tensor(np.array(edges).T)))
+        dataset = DataSet(data, features.shape[0], features.shape[1], 1)
     else:
         raise ValueError(f'dataset {name} not supported in dataloader')
 
