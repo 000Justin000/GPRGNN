@@ -142,18 +142,17 @@ if __name__ == '__main__':
     Init = args.Init
 
     Gamma_0 = None
-    alpha = args.alpha
 
     args.Gamma = Gamma_0
 
-    Results0 = []
-
-    for RP in tqdm(range(RPMAX)):
-
-        test_acc, best_val_acc, Gamma_0 = RunExp(args, dataset, data, Net)
-        Results0.append([test_acc, best_val_acc, Gamma_0])
-
-    test_acc_mean, val_acc_mean, _ = np.mean(Results0, axis=0) * 100
-    test_acc_std = np.sqrt(np.var(Results0, axis=0)[0]) * 100
-    print(f'{gnn_name} on dataset {args.dataset}, in {RPMAX} repeated experiment:')
-    print(f'test acc mean = {test_acc_mean:.4f} \t test acc std = {test_acc_std:.4f} \t val acc mean = {val_acc_mean:.4f}')
+    acc_list = []
+#   for alpha_c in [0.00, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.85, 0.90, 0.95, 0.99, 0.999]:
+    for alpha_c in [0.00, 0.50, 0.90]:
+        alpha = 1.0 - alpha_c
+        acc_at_alpha = []
+#       for _ in range(RPMAX):
+        for _ in range(2):
+            test_acc, best_val_acc, Gamma_0 = RunExp(args, dataset, data, Net)
+            acc_at_alpha.append(test_acc)
+        acc_list.append(sum(acc_at_alpha) / len(acc_at_alpha))
+    print("overall accuracy:    ", max(acc_list), "    ", acc_list)

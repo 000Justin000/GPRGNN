@@ -61,8 +61,7 @@ class GPR_prop(MessagePassing):
         self.temp.data[-1] = (1-self.alpha)**self.K
 
     def forward(self, x, edge_index, edge_weight=None):
-        edge_index, norm = gcn_norm(
-            edge_index, edge_weight, num_nodes=x.size(0), dtype=x.dtype)
+        edge_index, norm = gcn_norm(edge_index, edge_weight, num_nodes=x.size(0), dtype=x.dtype)
 
         hidden = x*(self.temp[0])
         for k in range(self.K):
@@ -75,8 +74,7 @@ class GPR_prop(MessagePassing):
         return norm.view(-1, 1) * x_j
 
     def __repr__(self):
-        return '{}(K={}, temp={})'.format(self.__class__.__name__, self.K,
-                                          self.temp)
+        return '{}(K={}, temp={})'.format(self.__class__.__name__, self.K, self.temp)
 
 
 class GPRGNN(torch.nn.Module):

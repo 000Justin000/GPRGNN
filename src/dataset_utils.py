@@ -169,8 +169,6 @@ def DataLoader(name, tname):
     if 'cSBM_data' in name:
         path = '../data/'
         dataset = dataset_ContextualSBM(path, name=name)
-    else:
-        name = name.lower()
 
     DataSet = namedtuple('DataSet', ['data', 'num_nodes', 'num_features', 'num_classes'])
 
